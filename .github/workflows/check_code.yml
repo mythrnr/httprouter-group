@@ -1,0 +1,77 @@
+name: "Check codes"
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "nothing"
+      # - "master"
+  workflow_dispatch:
+
+jobs:
+  golangci:
+    name: "golangci-lint"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v2"
+
+      - uses: "golangci/golangci-lint-action@v2"
+        with:
+          version: "latest"
+          args: "--config=.golangci.yml"
+
+  scan_vulnerabilities:
+    name: "Scan Vulnerabilities"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v2"
+
+      - uses: "actions/setup-go@v1"
+        with:
+          go-version: "1.15"
+
+      - name: "Write go.list file"
+        run: "go list -json -m all > go.list"
+
+      - uses: "sonatype-nexus-community/nancy-github-action@main"
+
+  testing:
+    name: "Unit Test"
+    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        go:
+          - "1.13"
+          - "1.14"
+          - "1.15"
+    steps:
+      - uses: "actions/checkout@v2"
+
+      - uses: "actions/setup-go@v1"
+        with:
+          go-version: "${{ matrix.go }}"
+
+      - name: "Get GOMODCACHE directory path"
+        id: "gomodcache-dir-path"
+        run: |
+          GOMODCACHE=$(go env GOPATH)/pkg/mod
+          echo "::set-output name=dir::$GOMODCACHE"
+
+      - name: "Cache GOMODCACHE directory"
+        uses: "actions/cache@v2"
+        # use this to check for `cache-hit`
+        # `steps.gomodcache-dir.outputs.cache-hit != 'true'`
+        id: "gomodcache-dir"
+        with:
+          path: "${{ steps.gomodcache-dir-path.outputs.dir }}"
+          key: "${{ runner.os }}-mythrnr-template-lib-golang-${{ hashFiles(format('{0}{1}', github.workspace, '/go.sum')) }}"
+          restore-keys: "${{ runner.os }}-mythrnr-template-lib-golang-"
+
+      - name: "Run tests"
+        run: "make test-json > result.json"
+
+      - name: "Annotate tests"
+        if: "always()"
+        uses: "guyarb/golang-test-annotations@v0.3.0"
+        with:
+          test-results: "result.json"

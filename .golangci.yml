@@ -1,0 +1,60 @@
+# see: https://github.com/golangci/golangci-lint/blob/master/.golangci.example.yml
+run:
+  skip-dirs:
+    - ".github"
+    - ".vscode"
+
+output:
+  sort-results: true
+
+linters-settings:
+  cyclop:
+    max-complexity: 20
+  dupl:
+    threshold: 100
+  errcheck:
+    check-type-assertions: true
+  gocognit:
+    min-complexity: 20
+  gocyclo:
+    min-complexity: 20
+  godox:
+    keywords:
+      - "TODO"
+      - "FIXME"
+  ifshort:
+    max-decl-lines: 1
+    max-decl-chars: 60
+  lll:
+    line-length: 80
+    tab-width: 4
+  makezero:
+    always: true
+  misspell:
+    locale: "US"
+    ignore-words:
+      - "someword"
+  nestif:
+    min-complexity: 4
+
+linters:
+  disable:
+    - "interfacer"
+    - "maligned"
+  presets:
+    - "bugs"
+    - "complexity"
+    - "format"
+    - "performance"
+    - "style"
+    - "unused"
+  fast: false
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files.
+    - path: "_test.go"
+      linters:
+        - "exhaustivestruct"
+        # - "errcheck"
+        # - "dupl"

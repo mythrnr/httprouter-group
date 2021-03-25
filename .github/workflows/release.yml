@@ -1,0 +1,26 @@
+name: "Create Release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  create_release:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v2"
+
+      - name: "Set Version"
+        run: echo "APP_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: "Create release"
+        id: "create-release"
+        uses: "actions/create-release@v1.1.0"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          draft: false
+          prerelease: "${{ contains(env.APP_VERSION, '-dev') }}"
+          release_name: "Release ${{ env.APP_VERSION }}"
+          tag_name: "${{ env.APP_VERSION }}"
