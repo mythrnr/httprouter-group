@@ -1,0 +1,26 @@
+{
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+  },
+  "editor.formatOnSave": true,
+  "editor.insertSpaces": false,
+  "go.autocompleteUnimportedPackages": true,
+  "go.formatTool": "goimports",
+  "go.inferGopath": false,
+  "go.languageServerExperimentalFeatures": {
+    "diagnostics": true
+  },
+  "go.lintOnSave": "workspace",
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": [
+    "--config=${workspaceFolder}/.golangci.yml",
+    "--fast"
+  ],
+  "go.toolsEnvVars": {
+    "GO111MODULE": "on"
+  },
+  "go.useLanguageServer": true
+}
