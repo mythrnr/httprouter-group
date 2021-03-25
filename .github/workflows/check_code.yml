@@ -64,8 +64,8 @@ jobs:
         id: "gomodcache-dir"
         with:
           path: "${{ steps.gomodcache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-mythrnr-template-lib-golang-${{ hashFiles(format('{0}{1}', github.workspace, '/go.sum')) }}"
-          restore-keys: "${{ runner.os }}-mythrnr-template-lib-golang-"
+          key: "${{ runner.os }}-mythrnr-httprouter-group-${{ hashFiles(format('{0}{1}', github.workspace, '/go.sum')) }}"
+          restore-keys: "${{ runner.os }}-mythrnr-httprouter-group-"
 
       - name: "Run tests"
         run: "make test-json > result.json"

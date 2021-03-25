@@ -26,7 +26,7 @@ linters-settings:
     max-decl-lines: 1
     max-decl-chars: 60
   lll:
-    line-length: 80
+    line-length: 100
     tab-width: 4
   makezero:
     always: true
@@ -36,6 +36,8 @@ linters-settings:
       - "someword"
   nestif:
     min-complexity: 4
+  testpackage:
+    skip-regexp: "_inner_test.go"
 
 linters:
   disable:
@@ -55,6 +57,8 @@ issues:
     # Exclude some linters from running on tests files.
     - path: "_test.go"
       linters:
+        - "dupl"
+        - "errcheck"
         - "exhaustivestruct"
-        # - "errcheck"
-        # - "dupl"
+        - "funlen"
+        - "goerr113"
