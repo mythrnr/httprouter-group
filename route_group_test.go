@@ -120,21 +120,31 @@ func Test_RouteGroup(t *testing.T) {
 		),
 	)
 
-	hr := httprouter.New()
+	router := httprouter.New()
+	g.Register(router)
 
 	t.Log("\n" + strings.Join(g.List(), "\n"))
-	g.Register(hr)
+
+	assert.Equal(t, []string{
+		"GET     /",
+		"OPTIONS /",
+		"POST    /",
+		"GET     /users",
+		"POST    /users",
+		"GET     /users/:id",
+		"PUT     /users/:id",
+	}, g.List())
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodGet,
 			"/",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 		require.Nil(t, err)
@@ -150,15 +160,15 @@ func Test_RouteGroup(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodPost,
 			"/",
 			ioutil.NopCloser(bytes.NewReader([]byte("body"))),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 		require.Nil(t, err)
@@ -174,15 +184,15 @@ func Test_RouteGroup(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodGet,
 			"/users",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 		require.Nil(t, err)
@@ -202,15 +212,15 @@ func Test_RouteGroup(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodPost,
 			"/users",
 			ioutil.NopCloser(bytes.NewReader([]byte("body"))),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 		require.Nil(t, err)
@@ -230,15 +240,15 @@ func Test_RouteGroup(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodGet,
 			"/users/1",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 		require.Nil(t, err)
@@ -262,15 +272,15 @@ func Test_RouteGroup(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodPut,
 			"/users/1",
 			ioutil.NopCloser(bytes.NewReader([]byte("body"))),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 		require.Nil(t, err)
@@ -300,50 +310,60 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 	g := group.New(
 		"/users/:id",
 	).DELETE(
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			rw.Write([]byte("DELETE /users/" + p.ByName("id")))
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("DELETE /users/" + p.ByName("id")))
 		},
 	).GET(
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			rw.Write([]byte("GET /users/" + p.ByName("id")))
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("GET /users/" + p.ByName("id")))
 		},
 	).HEAD(
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			rw.Write([]byte("HEAD /users/" + p.ByName("id")))
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("HEAD /users/" + p.ByName("id")))
 		},
 	).OPTIONS(
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			rw.Write([]byte("OPTIONS /users/" + p.ByName("id")))
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("OPTIONS /users/" + p.ByName("id")))
 		},
 	).PATCH(
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			rw.Write([]byte("PATCH /users/" + p.ByName("id")))
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("PATCH /users/" + p.ByName("id")))
 		},
 	).POST(
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			rw.Write([]byte("POST /users/" + p.ByName("id")))
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("POST /users/" + p.ByName("id")))
 		},
 	).PUT(
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			rw.Write([]byte("PUT /users/" + p.ByName("id")))
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("PUT /users/" + p.ByName("id")))
 		},
 	)
 
-	hr := httprouter.New()
+	router := httprouter.New()
+	g.Register(router)
 
 	t.Log("\n" + strings.Join(g.List(), "\n"))
-	g.Register(hr)
+
+	assert.Equal(t, []string{
+		"DELETE  /users/:id",
+		"GET     /users/:id",
+		"HEAD    /users/:id",
+		"OPTIONS /users/:id",
+		"PATCH   /users/:id",
+		"POST    /users/:id",
+		"PUT     /users/:id",
+	}, g.List())
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodDelete,
 			"/users/1",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 
@@ -352,15 +372,15 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodGet,
 			"/users/2",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 
@@ -369,15 +389,15 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodHead,
 			"/users/3",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 
@@ -386,15 +406,15 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodOptions,
 			"/users/4",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 
@@ -403,15 +423,15 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodPatch,
 			"/users/5",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 
@@ -420,15 +440,15 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodPost,
 			"/users/6",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 
@@ -437,15 +457,15 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 	}
 
 	{
-		req, _ := http.NewRequestWithContext(
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
 			context.Background(),
 			http.MethodPut,
 			"/users/7",
 			ioutil.NopCloser(bytes.NewReader(nil)),
 		)
 
-		w := httptest.NewRecorder()
-		hr.ServeHTTP(w, req)
+		router.ServeHTTP(w, r)
 
 		body, err := ioutil.ReadAll(w.Body)
 

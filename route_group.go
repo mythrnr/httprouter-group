@@ -38,7 +38,7 @@ func New(path string) *RouteGroup {
 	}
 }
 
-// DELETE is a shortcut for (*RouteGroup).Handle(http.MethodDelete, path, handle).
+// DELETE is a shortcut for (*RouteGroup).Handle(http.MethodDelete, handle).
 func (r *RouteGroup) DELETE(handle httprouter.Handle) *RouteGroup {
 	return r.Handle(http.MethodDelete, handle)
 }
@@ -76,8 +76,8 @@ func (r *RouteGroup) PUT(handle httprouter.Handle) *RouteGroup {
 // Children returns self includes specified groups.
 //
 // Children は指定されたグループを含む自身を返す.
-func (r *RouteGroup) Children(rgs ...*RouteGroup) *RouteGroup {
-	r.children = append(r.children, rgs...)
+func (r *RouteGroup) Children(children ...*RouteGroup) *RouteGroup {
+	r.children = append(r.children, children...)
 
 	return r
 }
@@ -96,8 +96,8 @@ func (r *RouteGroup) Handle(method string, handler httprouter.Handle) *RouteGrou
 // Middleware returns self includes specified middlewares.
 //
 // Middleware は指定されたミドルウェアを含む自身を返す.
-func (r *RouteGroup) Middleware(ms ...Middleware) *RouteGroup {
-	r.middlewares = append(r.middlewares, ms...)
+func (r *RouteGroup) Middleware(middlewares ...Middleware) *RouteGroup {
+	r.middlewares = append(r.middlewares, middlewares...)
 
 	return r
 }
@@ -123,23 +123,23 @@ func (r *RouteGroup) List() []string {
 	const format = "%-8s%s"
 
 	routes := r.list("")
+	list := make([]string, 0, len(routes))
 
-	sort.Strings(routes)
+	sort.Sort(_sortBy(routes))
 
 	for i := range routes {
-		values := strings.Split(routes[i], " ")
-		routes[i] = fmt.Sprintf(format, values[1], values[0])
+		list = append(list, fmt.Sprintf(format, routes[i][0], routes[i][1]))
 	}
 
-	return routes
+	return list
 }
 
-func (r *RouteGroup) list(parentPath string) []string {
+func (r *RouteGroup) list(parentPath string) [][2]string {
 	path := joinPath(parentPath, r.path)
-	routes := []string{}
+	routes := make([][2]string, 0, r.len())
 
 	for m := range r.handlers {
-		routes = append(routes, fmt.Sprintf("%s %s", path, m))
+		routes = append(routes, [2]string{m, path})
 	}
 
 	for _, rg := range r.children {
@@ -149,6 +149,28 @@ func (r *RouteGroup) list(parentPath string) []string {
 	return routes
 }
 
+func (r *RouteGroup) len() int {
+	cnt := len(r.handlers)
+
+	for _, rg := range r.children {
+		cnt += rg.len()
+	}
+
+	return cnt
+}
+
+type _sortBy [][2]string
+
+func (a _sortBy) Len() int      { return len(a) }
+func (a _sortBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a _sortBy) Less(i, j int) bool {
+	if a[i][1] == a[j][1] {
+		return a[i][0] < a[j][0]
+	}
+
+	return a[i][1] < a[j][1]
+}
+
 // Register set registered handlers to Router recursively.
 // Middlewares are registered so that it is executed in
 // the order of registration of the parent hierarchy,
@@ -156,12 +178,12 @@ func (r *RouteGroup) list(parentPath string) []string {
 //
 // Register は登録済みのハンドラを再帰的に Router に登録する.
 // ミドルウェアは親階層の登録順, 続いて子階層の登録順で実行されるように登録される.
-func (r *RouteGroup) Register(hr *httprouter.Router) {
-	r.registerChild(hr, "", nil)
+func (r *RouteGroup) Register(router *httprouter.Router) {
+	r.registerChild(router, "", nil)
 }
 
 func (r *RouteGroup) registerChild(
-	hr *httprouter.Router,
+	router *httprouter.Router,
 	parentPath string,
 	parentMiddlewares []Middleware,
 ) {
@@ -169,11 +191,11 @@ func (r *RouteGroup) registerChild(
 	path := joinPath(parentPath, r.path)
 
 	for m, h := range r.handlers {
-		hr.Handle(m, path, middlewareWith(h, ms...))
+		router.Handle(m, path, middlewareWith(h, ms...))
 	}
 
 	for _, rg := range r.children {
-		rg.registerChild(hr, path, ms)
+		rg.registerChild(router, path, ms)
 	}
 }
 
