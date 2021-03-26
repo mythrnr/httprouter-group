@@ -5,12 +5,37 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"sort"
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func Test_sortBy(t *testing.T) {
+	t.Parallel()
+
+	expected := [][2]string{
+		{"GET", "/"},
+		{"PUT", "/"},
+		{"GET", "/users"},
+		{"DELETE", "/users/:id"},
+		{"GET", "/users/:id"},
+	}
+
+	actual := _sortBy([][2]string{
+		{"DELETE", "/users/:id"},
+		{"GET", "/"},
+		{"GET", "/users"},
+		{"GET", "/users/:id"},
+		{"PUT", "/"},
+	})
+
+	sort.Sort(actual)
+
+	assert.Equal(t, expected, [][2]string(actual))
+}
 
 func Test_joinPath(t *testing.T) {
 	t.Parallel()
@@ -81,43 +106,43 @@ func Test_middlewareWith(t *testing.T) {
 
 	ms := []Middleware{
 		func(h httprouter.Handle) httprouter.Handle {
-			return func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-				rw.Write([]byte("1"))
-				h(rw, r, p)
-				rw.Write([]byte("1"))
+			return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+				w.Write([]byte("1"))
+				h(w, r, p)
+				w.Write([]byte("1"))
 			}
 		},
 		func(h httprouter.Handle) httprouter.Handle {
-			return func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-				rw.Write([]byte("2"))
-				h(rw, r, p)
-				rw.Write([]byte("2"))
+			return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+				w.Write([]byte("2"))
+				h(w, r, p)
+				w.Write([]byte("2"))
 			}
 		},
 		func(h httprouter.Handle) httprouter.Handle {
-			return func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-				rw.Write([]byte("3"))
-				h(rw, r, p)
-				rw.Write([]byte("3"))
+			return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+				w.Write([]byte("3"))
+				h(w, r, p)
+				w.Write([]byte("3"))
 			}
 		},
 		func(h httprouter.Handle) httprouter.Handle {
-			return func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-				rw.Write([]byte("4"))
-				h(rw, r, p)
-				rw.Write([]byte("4"))
+			return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+				w.Write([]byte("4"))
+				h(w, r, p)
+				w.Write([]byte("4"))
 			}
 		},
 	}
 
-	h := func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		rw.Write([]byte("5"))
+	h := func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		w.Write([]byte("5"))
 	}
 
 	h = middlewareWith(h, ms...)
 
-	rw := httptest.NewRecorder()
-	req, _ := http.NewRequestWithContext(
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequestWithContext(
 		context.Background(),
 		http.MethodGet,
 		"/test",
@@ -125,10 +150,10 @@ func Test_middlewareWith(t *testing.T) {
 	)
 	p := httprouter.Params{}
 
-	h(rw, req, p)
+	h(w, r, p)
 
-	body, err := ioutil.ReadAll(rw.Body)
+	body, err := ioutil.ReadAll(w.Body)
+
 	require.Nil(t, err)
-
 	assert.Equal(t, "123454321", string(body))
 }
