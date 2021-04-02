@@ -1,9 +1,7 @@
 package group
 
 import (
-	"fmt"
 	"net/http"
-	"sort"
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
@@ -102,51 +100,18 @@ func (r *RouteGroup) Middleware(middlewares ...Middleware) *RouteGroup {
 	return r
 }
 
-// List returns slice of the pair of registered HTTP method
-// and URI sorted by string. This includes the information of children.
+// Routes returns a one-dimensional representation of
+// the handlers registered in the parent and child hierarchies.
+// The path and middleware are inherited,
+// and the middleware is registered in the order of registration of
+// the parent hierarchy, followed by the order of registration of
+// the child hierarchies.
 //
-// List は登録済みの HTTP メソッドと URI のペアを文字列でソートした slice を返す.
-// 自身を起点とした子階層の情報も取得して返す.
-//
-// Example.
-//
-//     []string{
-//         "GET     /",
-//         "GET     /users",
-//         "DELETE  /users/:id",
-//         "GET     /users/:id",
-//         "PUT     /users/:id",
-//     }
-//
-func (r *RouteGroup) List() []string {
-	// 8 = utf8.RuneCountInString(http.MethodOptions) + 1.
-	const format = "%-8s%s"
-
-	routes := r.list("")
-	list := make([]string, 0, len(routes))
-
-	sort.Sort(_sortBy(routes))
-
-	for i := range routes {
-		list = append(list, fmt.Sprintf(format, routes[i][0], routes[i][1]))
-	}
-
-	return list
-}
-
-func (r *RouteGroup) list(parentPath string) [][2]string {
-	path := joinPath(parentPath, r.path)
-	routes := make([][2]string, 0, r.len())
-
-	for m := range r.handlers {
-		routes = append(routes, [2]string{m, path})
-	}
-
-	for _, rg := range r.children {
-		routes = append(routes, rg.list(path)...)
-	}
-
-	return routes
+// Routes は自身と子階層に登録済みのハンドラを一次元化して返す.
+// パスとミドルウェアは引き継がれ, ミドルウェアは親階層の登録順,
+// 続いて子階層の登録順で実行されるように登録される.
+func (r *RouteGroup) Routes() Routes {
+	return r.routes("", nil)
 }
 
 func (r *RouteGroup) len() int {
@@ -159,44 +124,27 @@ func (r *RouteGroup) len() int {
 	return cnt
 }
 
-type _sortBy [][2]string
-
-func (a _sortBy) Len() int      { return len(a) }
-func (a _sortBy) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-func (a _sortBy) Less(i, j int) bool {
-	if a[i][1] == a[j][1] {
-		return a[i][0] < a[j][0]
-	}
-
-	return a[i][1] < a[j][1]
-}
-
-// Register set registered handlers to Router recursively.
-// Middlewares are registered so that it is executed in
-// the order of registration of the parent hierarchy,
-// followed by the order of registration of the child hierarchies.
-//
-// Register は登録済みのハンドラを再帰的に Router に登録する.
-// ミドルウェアは親階層の登録順, 続いて子階層の登録順で実行されるように登録される.
-func (r *RouteGroup) Register(router *httprouter.Router) {
-	r.registerChild(router, "", nil)
-}
-
-func (r *RouteGroup) registerChild(
-	router *httprouter.Router,
+func (r *RouteGroup) routes(
 	parentPath string,
 	parentMiddlewares []Middleware,
-) {
+) Routes {
 	ms := append(parentMiddlewares, r.middlewares...)
 	path := joinPath(parentPath, r.path)
+	routes := make(Routes, 0, r.len())
 
 	for m, h := range r.handlers {
-		router.Handle(m, path, middlewareWith(h, ms...))
+		routes = append(routes, &Route{
+			handler: middlewareWith(h, ms...),
+			method:  m,
+			path:    path,
+		})
 	}
 
 	for _, rg := range r.children {
-		rg.registerChild(router, path, ms)
+		routes = append(routes, rg.routes(path, ms)...)
 	}
+
+	return routes
 }
 
 func joinPath(ps ...string) string {

@@ -28,6 +28,7 @@
 package main
 
 import (
+    "fmt"
     "log"
     "net/http"
 
@@ -102,15 +103,19 @@ func main() {
         log.Fatal(rec)
     }
 
+    // logging.
+    //
     // GET     /
     // GET     /users
     // DELETE  /users/:id
     // GET     /users/:id
     // PUT     /users/:id
-    log.Print(strings.Join(g.List(), "\n"))
+    fmt.Println(g.Routes().String())
 
     // finally, register routes to httprouter instance.
-    g.Register(router)
+    for _, r := range g.Routes() {
+        router.Handle(r.Method(), r.Path(), r.Handler())
+    }
 
     // serve.
     log.Fatal(http.ListenAndServe(":8080", router))

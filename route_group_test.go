@@ -120,12 +120,7 @@ func Test_RouteGroup(t *testing.T) {
 		),
 	)
 
-	router := httprouter.New()
-	g.Register(router)
-
-	t.Log("\n" + strings.Join(g.List(), "\n"))
-
-	assert.Equal(t, []string{
+	assert.Equal(t, strings.Join([]string{
 		"GET     /",
 		"OPTIONS /",
 		"POST    /",
@@ -133,7 +128,13 @@ func Test_RouteGroup(t *testing.T) {
 		"POST    /users",
 		"GET     /users/:id",
 		"PUT     /users/:id",
-	}, g.List())
+	}, "\n"), g.Routes().String())
+
+	router := httprouter.New()
+
+	for _, r := range g.Routes() {
+		router.Handle(r.Method(), r.Path(), r.Handler())
+	}
 
 	{
 		w := httptest.NewRecorder()
@@ -339,12 +340,7 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 		},
 	)
 
-	router := httprouter.New()
-	g.Register(router)
-
-	t.Log("\n" + strings.Join(g.List(), "\n"))
-
-	assert.Equal(t, []string{
+	assert.Equal(t, strings.Join([]string{
 		"DELETE  /users/:id",
 		"GET     /users/:id",
 		"HEAD    /users/:id",
@@ -352,7 +348,13 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 		"PATCH   /users/:id",
 		"POST    /users/:id",
 		"PUT     /users/:id",
-	}, g.List())
+	}, "\n"), g.Routes().String())
+
+	router := httprouter.New()
+
+	for _, r := range g.Routes() {
+		router.Handle(r.Method(), r.Path(), r.Handler())
+	}
 
 	{
 		w := httptest.NewRecorder()
