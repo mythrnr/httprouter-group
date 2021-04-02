@@ -5,37 +5,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"sort"
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func Test_sortBy(t *testing.T) {
-	t.Parallel()
-
-	expected := [][2]string{
-		{"GET", "/"},
-		{"PUT", "/"},
-		{"GET", "/users"},
-		{"DELETE", "/users/:id"},
-		{"GET", "/users/:id"},
-	}
-
-	actual := _sortBy([][2]string{
-		{"DELETE", "/users/:id"},
-		{"GET", "/"},
-		{"GET", "/users"},
-		{"GET", "/users/:id"},
-		{"PUT", "/"},
-	})
-
-	sort.Sort(actual)
-
-	assert.Equal(t, expected, [][2]string(actual))
-}
 
 func Test_joinPath(t *testing.T) {
 	t.Parallel()
