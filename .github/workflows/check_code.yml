@@ -28,7 +28,7 @@ jobs:
 
       - uses: "actions/setup-go@v1"
         with:
-          go-version: "1.15"
+          go-version: "1.16"
 
       - name: "Write go.list file"
         run: "go list -json -m all > go.list"
@@ -44,6 +44,7 @@ jobs:
           - "1.13"
           - "1.14"
           - "1.15"
+          - "1.16"
     steps:
       - uses: "actions/checkout@v2"
 
@@ -64,8 +65,8 @@ jobs:
         id: "gomodcache-dir"
         with:
           path: "${{ steps.gomodcache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-mythrnr-httprouter-group-${{ hashFiles(format('{0}{1}', github.workspace, '/go.sum')) }}"
-          restore-keys: "${{ runner.os }}-mythrnr-httprouter-group-"
+          key: "${{ runner.os }}-mythrnr-httprouter-group-${{ matrix.go }}-${{ hashFiles(format('{0}{1}', github.workspace, '/go.sum')) }}"
+          restore-keys: "${{ runner.os }}-mythrnr-httprouter-group-${{ matrix.go }}-"
 
       - name: "Run tests"
         run: "make test-json > result.json"

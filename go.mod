@@ -1,6 +1,6 @@
 module github.com/mythrnr/httprouter-group
 
-go 1.15
+go 1.16
 
 require (
 	github.com/julienschmidt/httprouter v1.3.0
