@@ -1,18 +1,16 @@
 .PHONY: lint test test-json tidy
 .SILENT: test-json
 
-target ?= ./...
+pkg ?= ./...
 
 lint:
-	golangci-lint run \
-		--config=.golangci.yml \
-		--print-issued-lines=false $(target)
+	golangci-lint run $(pkg)
 
 test:
-	go test -cover $(target)
+	go test -cover $(pkg)
 
 test-json:
-	go test -cover -json $(target)
+	go test -cover -json $(pkg)
 
 tidy:
 	go mod tidy
