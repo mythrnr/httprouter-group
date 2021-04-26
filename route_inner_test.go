@@ -1,7 +1,8 @@
 package group
 
 import (
-	"sort"
+	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,23 +11,23 @@ import (
 func Test_sortBy(t *testing.T) {
 	t.Parallel()
 
-	expected := []*Route{
-		{method: "GET", path: "/", handler: nil},
-		{method: "PUT", path: "/", handler: nil},
-		{method: "GET", path: "/users", handler: nil},
-		{method: "DELETE", path: "/users/:id", handler: nil},
-		{method: "GET", path: "/users/:id", handler: nil},
-	}
+	expected := strings.Join([]string{
+		"GET     /",
+		"OPTIONS /",
+		"PUT     /",
+		"GET     /users",
+		"DELETE  /users/:id",
+		"GET     /users/:id",
+	}, "\n")
 
 	actual := Routes([]*Route{
-		{method: "DELETE", path: "/users/:id", handler: nil},
-		{method: "GET", path: "/", handler: nil},
-		{method: "GET", path: "/users", handler: nil},
-		{method: "GET", path: "/users/:id", handler: nil},
-		{method: "PUT", path: "/", handler: nil},
+		{method: http.MethodDelete, path: "/users/:id", handler: nil},
+		{method: http.MethodGet, path: "/", handler: nil},
+		{method: http.MethodGet, path: "/users", handler: nil},
+		{method: http.MethodOptions, path: "/", handler: nil},
+		{method: http.MethodGet, path: "/users/:id", handler: nil},
+		{method: http.MethodPut, path: "/", handler: nil},
 	})
 
-	sort.Sort(actual)
-
-	assert.Equal(t, expected, []*Route(actual))
+	assert.Equal(t, expected, actual.String())
 }
