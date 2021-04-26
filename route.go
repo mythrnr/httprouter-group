@@ -50,46 +50,56 @@ type Routes []*Route
 //
 // Example.
 //
-//     `GET     /
+//     GET     /
 //     GET     /users
 //     DELETE  /users/:id
 //     GET     /users/:id
-//     PUT     /users/:id`
+//     PUT     /users/:id
 //
 func (r Routes) String() string {
 	// 8 = utf8.RuneCountInString(http.MethodOptions) + 1.
 	const format = "%-8s%s"
 
-	list := make([]string, 0, len(r))
-
-	sort.Sort(r)
+	l := make([][2]string, 0, len(r))
+	ll := make([]string, 0, len(l))
 
 	for i := range r {
-		list = append(list, fmt.Sprintf(format, r[i].method, r[i].path))
+		l = append(l, [2]string{r[i].method, r[i].path})
 	}
 
-	return strings.Join(list, "\n")
+	sort.Sort(_sort(l))
+
+	for i := range l {
+		ll = append(ll, fmt.Sprintf(format, l[i][0], l[i][1]))
+	}
+
+	return strings.Join(ll, "\n")
 }
+
+// _sort is defined for sorting when stringing `Routes`.
+//
+// _sort は `Routes` の文字列化のときにソートするための定義.
+type _sort [][2]string
 
 // Len is an implementation of `sort.Interface`.
 //
 // Len は `sort.Interface` の実装.
-func (r Routes) Len() int { return len(r) }
+func (s _sort) Len() int { return len(s) }
 
 // Swap is an implementation of `sort.Interface`.
 //
 // Swap は `sort.Interface` の実装.
-func (r Routes) Swap(i, j int) { r[i], r[j] = r[j], r[i] }
+func (s _sort) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 
 // Less is an implementation of `sort.Interface`.
 // Sort by path, HTTP method priority.
 //
 // Less は `sort.Interface` の実装.
 // パス, HTTP メソッドの優先順でソートする.
-func (r Routes) Less(i, j int) bool {
-	if r[i].path == r[j].path {
-		return r[i].method < r[j].method
+func (s _sort) Less(i, j int) bool {
+	if s[i][1] == s[j][1] {
+		return s[i][0] < s[j][0]
 	}
 
-	return r[i].path < r[j].path
+	return s[i][1] < s[j][1]
 }

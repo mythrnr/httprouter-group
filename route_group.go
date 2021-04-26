@@ -71,6 +71,27 @@ func (r *RouteGroup) PUT(handle httprouter.Handle) *RouteGroup {
 	return r.Handle(http.MethodPut, handle)
 }
 
+// Any relates its handler to all HTTP methods
+// defined in `net/http` and returns itself.
+// Handler will be ignored if HTTP method is already registered.
+//
+// Any はハンドラを `net/http` で定義された HTTP メソッド全てに紐付けて自身を返す.
+// 登録済みの HTTP メソッドが指定された場合は無視される.
+func (r *RouteGroup) Any(handler httprouter.Handle) *RouteGroup {
+	return r.Match(
+		handler,
+		http.MethodConnect,
+		http.MethodDelete,
+		http.MethodGet,
+		http.MethodHead,
+		http.MethodOptions,
+		http.MethodPatch,
+		http.MethodPost,
+		http.MethodPut,
+		http.MethodTrace,
+	)
+}
+
 // Children returns self includes specified groups.
 //
 // Children は指定されたグループを含む自身を返す.
@@ -87,6 +108,24 @@ func (r *RouteGroup) Children(children ...*RouteGroup) *RouteGroup {
 // 登録済みの HTTP メソッドが指定された場合, ハンドラは上書きされる.
 func (r *RouteGroup) Handle(method string, handler httprouter.Handle) *RouteGroup {
 	r.handlers[method] = handler
+
+	return r
+}
+
+// Match relates the handler to all specified HTTP methods and returns itself.
+// Handler will be ignored if HTTP method is already registered.
+//
+// Match はハンドラを指定された HTTP メソッド全てに紐付けて自身を返す.
+// 登録済みの HTTP メソッドが指定された場合は無視される.
+func (r *RouteGroup) Match(
+	handler httprouter.Handle,
+	methods ...string,
+) *RouteGroup {
+	for _, m := range methods {
+		if _, exists := r.handlers[m]; !exists {
+			r.handlers[m] = handler
+		}
+	}
 
 	return r
 }

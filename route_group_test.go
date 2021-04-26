@@ -475,3 +475,72 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 		assert.Equal(t, "PUT /users/7", string(body))
 	}
 }
+
+func Test_RouteGroup_Any(t *testing.T) {
+	t.Parallel()
+
+	g := group.New("/:param").GET(
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("GET /" + p.ByName("param")))
+		},
+	).Any(
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("Any: " + r.Method + " /" + p.ByName("param")))
+		},
+	).DELETE(
+		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			w.Write([]byte("DELETE /" + p.ByName("param")))
+		},
+	)
+
+	assert.Equal(t, strings.Join([]string{
+		"CONNECT /:param",
+		"DELETE  /:param",
+		"GET     /:param",
+		"HEAD    /:param",
+		"OPTIONS /:param",
+		"PATCH   /:param",
+		"POST    /:param",
+		"PUT     /:param",
+		"TRACE   /:param",
+	}, "\n"), g.Routes().String())
+
+	router := httprouter.New()
+
+	for _, r := range g.Routes() {
+		router.Handle(r.Method(), r.Path(), r.Handler())
+	}
+
+	for _, m := range []string{
+		http.MethodConnect,
+		http.MethodDelete,
+		http.MethodGet,
+		http.MethodHead,
+		http.MethodOptions,
+		http.MethodPatch,
+		http.MethodPost,
+		http.MethodPut,
+		http.MethodTrace,
+	} {
+		w := httptest.NewRecorder()
+		r, _ := http.NewRequestWithContext(
+			context.Background(),
+			m,
+			"/parameter",
+			ioutil.NopCloser(bytes.NewReader(nil)),
+		)
+
+		router.ServeHTTP(w, r)
+
+		body, err := ioutil.ReadAll(w.Body)
+
+		require.Nil(t, err)
+
+		switch m {
+		case http.MethodDelete, http.MethodGet:
+			assert.Equal(t, m+" /parameter", string(body))
+		default:
+			assert.Equal(t, "Any: "+m+" /parameter", string(body))
+		}
+	}
+}
