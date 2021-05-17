@@ -41,8 +41,12 @@ linters-settings:
 
 linters:
   disable:
+    # ---- deprecated ---- #
+    - "golint"
     - "interfacer"
     - "maligned"
+    - "scopelint"
+    # -------------------- #
   presets:
     - "bugs"
     - "complexity"
@@ -51,7 +55,6 @@ linters:
     - "style"
     - "unused"
   fast: false
-
 issues:
   exclude-rules:
     # Exclude some linters from running on tests files.
@@ -59,6 +62,4 @@ issues:
       linters:
         - "dupl"
         - "errcheck"
-        - "exhaustivestruct"
         - "funlen"
-        - "goerr113"

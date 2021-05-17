@@ -167,20 +167,20 @@ func (r *RouteGroup) routes(
 	parentPath string,
 	parentMiddlewares []Middleware,
 ) Routes {
-	ms := append(parentMiddlewares, r.middlewares...)
+	parentMiddlewares = append(parentMiddlewares, r.middlewares...)
 	path := joinPath(parentPath, r.path)
 	routes := make(Routes, 0, r.len())
 
 	for m, h := range r.handlers {
 		routes = append(routes, &Route{
-			handler: middlewareWith(h, ms...),
+			handler: middlewareWith(h, parentMiddlewares...),
 			method:  m,
 			path:    path,
 		})
 	}
 
 	for _, rg := range r.children {
-		routes = append(routes, rg.routes(path, ms)...)
+		routes = append(routes, rg.routes(path, parentMiddlewares)...)
 	}
 
 	return routes
