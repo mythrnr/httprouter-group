@@ -12,15 +12,27 @@ jobs:
       - uses: "actions/checkout@v2"
 
       - name: "Set Version"
-        run: echo "APP_VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+
+      - name: "Create release note"
+        run: |
+          echo "## Change Log" > note.txt
+          echo "" >> note.txt
+
+          git fetch origin --tags
+
+          RECENT_TAG=$(git tag \
+            --no-contains=$GITHUB_SHA \
+            --sort="version:refname" \
+            | tail -1)
+
+          git log $RECENT_TAG..${{ env.VERSION }} \
+            --pretty=format:"- %h : %s (by @%an)" >> note.txt
 
       - name: "Create release"
-        id: "create-release"
-        uses: "actions/create-release@v1.1.0"
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        with:
-          draft: false
-          prerelease: "${{ contains(env.APP_VERSION, '-dev') }}"
-          release_name: "Release ${{ env.APP_VERSION }}"
-          tag_name: "${{ env.APP_VERSION }}"
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+          gh release create ${{ env.VERSION }} \
+            --title "Release ${{ env.VERSION }}" \
+            --notes-file note.txt

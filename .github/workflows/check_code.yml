@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: "actions/checkout@v2"
 
-      - uses: "actions/setup-go@v1"
+      - uses: "actions/setup-go@v2"
         with:
           go-version: "1.16"
 
@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: "actions/checkout@v2"
 
-      - uses: "actions/setup-go@v1"
+      - uses: "actions/setup-go@v2"
         with:
           go-version: "${{ matrix.go }}"
 
@@ -72,6 +72,6 @@ jobs:
 
       - name: "Annotate tests"
         if: "always()"
-        uses: "guyarb/golang-test-annotations@v0.3.0"
+        uses: "guyarb/golang-test-annotations@v0.4.0"
         with:
           test-results: "result.json"
