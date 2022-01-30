@@ -3,7 +3,7 @@ package group_test
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -142,12 +142,12 @@ func Test_RouteGroup(t *testing.T) {
 			context.Background(),
 			http.MethodGet,
 			"/",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 		require.Nil(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
@@ -166,12 +166,12 @@ func Test_RouteGroup(t *testing.T) {
 			context.Background(),
 			http.MethodPost,
 			"/",
-			ioutil.NopCloser(bytes.NewReader([]byte("body"))),
+			io.NopCloser(bytes.NewReader([]byte("body"))),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 		require.Nil(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
@@ -190,12 +190,12 @@ func Test_RouteGroup(t *testing.T) {
 			context.Background(),
 			http.MethodGet,
 			"/users",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 		require.Nil(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
@@ -218,12 +218,12 @@ func Test_RouteGroup(t *testing.T) {
 			context.Background(),
 			http.MethodPost,
 			"/users",
-			ioutil.NopCloser(bytes.NewReader([]byte("body"))),
+			io.NopCloser(bytes.NewReader([]byte("body"))),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 		require.Nil(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
@@ -246,12 +246,12 @@ func Test_RouteGroup(t *testing.T) {
 			context.Background(),
 			http.MethodGet,
 			"/users/1",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 		require.Nil(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
@@ -278,12 +278,12 @@ func Test_RouteGroup(t *testing.T) {
 			context.Background(),
 			http.MethodPut,
 			"/users/1",
-			ioutil.NopCloser(bytes.NewReader([]byte("body"))),
+			io.NopCloser(bytes.NewReader([]byte("body"))),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 		require.Nil(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
@@ -362,12 +362,12 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 			context.Background(),
 			http.MethodDelete,
 			"/users/1",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 
 		require.Nil(t, err)
 		assert.Equal(t, "DELETE /users/1", string(body))
@@ -379,12 +379,12 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 			context.Background(),
 			http.MethodGet,
 			"/users/2",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 
 		require.Nil(t, err)
 		assert.Equal(t, "GET /users/2", string(body))
@@ -396,12 +396,12 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 			context.Background(),
 			http.MethodHead,
 			"/users/3",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 
 		require.Nil(t, err)
 		assert.Equal(t, "HEAD /users/3", string(body))
@@ -413,12 +413,12 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 			context.Background(),
 			http.MethodOptions,
 			"/users/4",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 
 		require.Nil(t, err)
 		assert.Equal(t, "OPTIONS /users/4", string(body))
@@ -430,12 +430,12 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 			context.Background(),
 			http.MethodPatch,
 			"/users/5",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 
 		require.Nil(t, err)
 		assert.Equal(t, "PATCH /users/5", string(body))
@@ -447,12 +447,12 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 			context.Background(),
 			http.MethodPost,
 			"/users/6",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 
 		require.Nil(t, err)
 		assert.Equal(t, "POST /users/6", string(body))
@@ -464,12 +464,12 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 			context.Background(),
 			http.MethodPut,
 			"/users/7",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 
 		require.Nil(t, err)
 		assert.Equal(t, "PUT /users/7", string(body))
@@ -527,12 +527,12 @@ func Test_RouteGroup_Any(t *testing.T) {
 			context.Background(),
 			m,
 			"/parameter",
-			ioutil.NopCloser(bytes.NewReader(nil)),
+			io.NopCloser(bytes.NewReader(nil)),
 		)
 
 		router.ServeHTTP(w, r)
 
-		body, err := ioutil.ReadAll(w.Body)
+		body, err := io.ReadAll(w.Body)
 
 		require.Nil(t, err)
 

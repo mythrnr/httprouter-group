@@ -2,7 +2,7 @@ package group
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -127,7 +127,7 @@ func Test_middlewareWith(t *testing.T) {
 
 	h(w, r, p)
 
-	body, err := ioutil.ReadAll(w.Body)
+	body, err := io.ReadAll(w.Body)
 
 	require.Nil(t, err)
 	assert.Equal(t, "123454321", string(body))
