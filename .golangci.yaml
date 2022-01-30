@@ -36,11 +36,14 @@ linters-settings:
       - "someword"
   nestif:
     min-complexity: 4
+  staticcheck:
+    go: "1.17"
   testpackage:
     skip-regexp: "_inner_test.go"
 
 linters:
   disable:
+    - "varnamelen"
     # ---- deprecated ---- #
     - "golint"
     - "interfacer"
@@ -63,3 +66,4 @@ issues:
         - "dupl"
         - "errcheck"
         - "funlen"
+        - "maintidx"

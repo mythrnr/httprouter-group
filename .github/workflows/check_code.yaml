@@ -27,7 +27,7 @@ jobs:
 
       - uses: "actions/setup-go@v2"
         with:
-          go-version: "1.16"
+          go-version: "1.17"
 
       - name: "Write go.list file"
         run: "go list -json -m all > go.list"
@@ -40,10 +40,8 @@ jobs:
     strategy:
       matrix:
         go:
-          - "1.13"
-          - "1.14"
-          - "1.15"
           - "1.16"
+          - "1.17"
     steps:
       - uses: "actions/checkout@v2"
 
