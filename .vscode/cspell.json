@@ -2,7 +2,6 @@
   "caseSensitive": false,
   "dictionaries": [
     "bash",
-    "docker",
     "golang"
   ],
   "language": "en",
