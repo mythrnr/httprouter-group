@@ -3,11 +3,6 @@
     "editor.formatOnSave": false,
     "files.trimTrailingWhitespace": false
   },
-  "[yaml]": {
-    "editor.defaultFormatter": "redhat.vscode-yaml",
-  },
-  "editor.formatOnSave": true,
-  "editor.insertSpaces": false,
   "go.autocompleteUnimportedPackages": true,
   "go.formatTool": "goimports",
   "go.inferGopath": false,

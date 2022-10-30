@@ -9,13 +9,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  golangci:
-    name: "golangci-lint"
+  golangci-lint:
+    name: "Check coding style"
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v2"
+      - uses: "actions/checkout@v3"
 
-      - uses: "golangci/golangci-lint-action@v2"
+      - uses: "golangci/golangci-lint-action@v3"
         with:
           version: "latest"
 
@@ -23,16 +23,32 @@ jobs:
     name: "Scan Vulnerabilities"
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v2"
+      - uses: "actions/checkout@v3"
 
-      - uses: "actions/setup-go@v2"
+      - uses: "actions/setup-go@v3"
         with:
-          go-version: "1.17"
+          go-version: "1.19"
 
       - name: "Write go.list file"
         run: "go list -json -m all > go.list"
 
       - uses: "sonatype-nexus-community/nancy-github-action@main"
+
+  spell-check:
+    name: "Check spell"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v3"
+
+      - uses: "actions/setup-node@v3"
+        with:
+          node-version: "16.x"
+
+      - name: "Install cSpell"
+        run: "npm install -g cspell"
+
+      - name: "Run spell check"
+        run: "make spell-check"
 
   testing:
     name: "Unit Test"
@@ -42,10 +58,12 @@ jobs:
         go:
           - "1.16"
           - "1.17"
+          - "1.18"
+          - "1.19"
     steps:
-      - uses: "actions/checkout@v2"
+      - uses: "actions/checkout@v3"
 
-      - uses: "actions/setup-go@v2"
+      - uses: "actions/setup-go@v3"
         with:
           go-version: "${{ matrix.go }}"
 
@@ -53,10 +71,10 @@ jobs:
         id: "gomodcache-dir-path"
         run: |
           GOMODCACHE=$(go env GOPATH)/pkg/mod
-          echo "::set-output name=dir::$GOMODCACHE"
+          echo "dir=$GOMODCACHE" >> $GITHUB_OUTPUT
 
       - name: "Cache GOMODCACHE directory"
-        uses: "actions/cache@v2"
+        uses: "actions/cache@v3"
         # use this to check for `cache-hit`
         # `steps.gomodcache-dir.outputs.cache-hit != 'true'`
         id: "gomodcache-dir"
@@ -70,6 +88,6 @@ jobs:
 
       - name: "Annotate tests"
         if: "always()"
-        uses: "guyarb/golang-test-annotations@v0.4.0"
+        uses: "guyarb/golang-test-annotations@v0.6.0"
         with:
           test-results: "result.json"

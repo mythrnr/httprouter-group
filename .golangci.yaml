@@ -33,7 +33,7 @@ linters-settings:
   misspell:
     locale: "US"
     ignore-words:
-      - "someword"
+      - "some_word"
   nestif:
     min-complexity: 4
   staticcheck:
@@ -45,10 +45,19 @@ linters:
   disable:
     - "varnamelen"
     # ---- deprecated ---- #
+    - "deadcode"
+    - "exhaustivestruct"
     - "golint"
+    - "ifshort"
     - "interfacer"
     - "maligned"
+    - "nosnakecase"
+    - "rowserrcheck"
     - "scopelint"
+    - "sqlclosecheck"
+    - "structcheck"
+    - "varcheck"
+    - "wastedassign"
     # -------------------- #
   presets:
     - "bugs"

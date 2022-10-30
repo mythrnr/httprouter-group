@@ -9,25 +9,27 @@ jobs:
   create_release:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v2"
+      - uses: "actions/checkout@v3"
+        with:
+          fetch-depth: 0
 
       - name: "Set Version"
         run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
       - name: "Create release note"
         run: |
-          echo "## Change Log" > note.txt
+          echo "## Change Log" >> note.txt
           echo "" >> note.txt
 
           git fetch origin --tags
 
           RECENT_TAG=$(git tag \
-            --no-contains=$GITHUB_SHA \
-            --sort="version:refname" \
-            | tail -1)
+            --no-contains=${{ env.VERSION }} \
+            --sort=authordate | tail -1)
 
           git log $RECENT_TAG..${{ env.VERSION }} \
-            --pretty=format:"- %h : %s (by @%an)" >> note.txt
+            --format='### %h : %s (by @%an)%n```%n%b```%n' \
+            | sed -e :loop -e 'N; $!b loop' -e 's/```\n```//g' >> note.txt
 
       - name: "Create release"
         run: |

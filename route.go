@@ -50,12 +50,11 @@ type Routes []*Route
 //
 // Example.
 //
-//     GET     /
-//     GET     /users
-//     DELETE  /users/:id
-//     GET     /users/:id
-//     PUT     /users/:id
-//
+//	GET     /
+//	GET     /users
+//	DELETE  /users/:id
+//	GET     /users/:id
+//	PUT     /users/:id
 func (r Routes) String() string {
 	// 8 = utf8.RuneCountInString(http.MethodOptions) + 1.
 	const format = "%-8s%s"

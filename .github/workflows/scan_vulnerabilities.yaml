@@ -1,0 +1,22 @@
+name: "Scan Vulnerabilities"
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  scan_vulnerabilities:
+    name: "Scan Vulnerabilities"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v3"
+
+      - uses: "actions/setup-go@v3"
+        with:
+          go-version: "1.19"
+
+      - name: "Write go.list file"
+        run: "go list -json -m all > go.list"
+
+      - uses: "sonatype-nexus-community/nancy-github-action@main"
