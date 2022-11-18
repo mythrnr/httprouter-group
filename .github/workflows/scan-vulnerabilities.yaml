@@ -6,9 +6,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  scan_vulnerabilities:
+  scan-vulnerabilities:
     name: "Scan Vulnerabilities"
     runs-on: "ubuntu-latest"
+    timeout-minutes: 5
     steps:
       - uses: "actions/checkout@v3"
 
