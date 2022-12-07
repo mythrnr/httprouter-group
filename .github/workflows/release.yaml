@@ -33,8 +33,9 @@ jobs:
             --sort=authordate | tail -1)
 
           git log $RECENT_TAG..${{ env.VERSION }} \
-            --format='### %h : %s (by @%an)%n```%n%b```%n' \
-            | sed -e :loop -e 'N; $!b loop' -e 's/```\n```//g' >> note.txt
+            --format='### %h : %s (by @%an)%n%n```%n%b%n```%n' \
+            | grep -v "Merge remote-tracking" \
+            | sed -e :loop -e 'N; $!b loop' -e 's/```\n\n```//g' >> note.txt
 
       - name: "Create release"
         run: |
