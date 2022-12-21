@@ -8,6 +8,7 @@
   "minWordLength": 4,
   "words": [
     "authordate",
+    "buildvcs",
     "cyclop",
     "davecgh",
     "deadcode",

@@ -14,7 +14,7 @@ lint:
 
 .PHONY: nancy
 nancy:
-	go list -json -m all | nancy sleuth
+	go list -buildvcs=false -deps -json ./... | nancy sleuth
 
 .PHONY: spell-check
 spell-check:

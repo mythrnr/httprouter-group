@@ -21,6 +21,6 @@ jobs:
           go-version: "1.19"
 
       - name: "Write go.list file"
-        run: "go list -json -m all > go.list"
+        run: "go list -buildvcs=false -deps -json ./... > go.list"
 
       - uses: "sonatype-nexus-community/nancy-github-action@main"
