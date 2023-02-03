@@ -4,25 +4,36 @@ endif
 
 pkg ?= ./...
 
+.PHONY: clean
+clean:
+	rm -rf .cache/*
+
 .PHONY: fmt
 fmt:
 	go fmt $(pkg)
 
 .PHONY: lint
 lint:
-	golangci-lint run $(pkg)
+	docker pull golangci/golangci-lint:latest > /dev/null \
+	&& mkdir -p .cache/golangci-lint \
+	&& docker run --rm \
+		-v $(shell pwd):/app \
+		-v $(shell pwd)/.cache:/root/.cache \
+		-w /app golangci/golangci-lint:latest golangci-lint run $(pkg)
 
 .PHONY: nancy
 nancy:
-	go list -buildvcs=false -deps -json ./... | nancy sleuth
+	docker pull sonatypecommunity/nancy:latest > /dev/null \
+	&& go list -buildvcs=false -deps -json ./... \
+	| docker run --rm -i sonatypecommunity/nancy:latest sleuth
 
 .PHONY: spell-check
 spell-check:
-	# npm install -g cspell@latest
-	cspell lint --config .vscode/cspell.json ".*" && \
-	cspell lint --config .vscode/cspell.json "**/.*" && \
-	cspell lint --config .vscode/cspell.json ".{github,vscode}/**/*" && \
-	cspell lint --config .vscode/cspell.json "**"
+	docker pull ghcr.io/streetsidesoftware/cspell:latest > /dev/null \
+	&& docker run --rm \
+		-v $(shell pwd):/workdir \
+		ghcr.io/streetsidesoftware/cspell:latest \
+			--config .vscode/cspell.json "**"
 
 .PHONY: test
 test:
