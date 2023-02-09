@@ -3,6 +3,7 @@ MAKEFLAGS += --silent
 endif
 
 pkg ?= ./...
+pwd = $(shell pwd)
 
 .PHONY: clean
 clean:
@@ -17,9 +18,10 @@ lint:
 	docker pull golangci/golangci-lint:latest > /dev/null \
 	&& mkdir -p .cache/golangci-lint \
 	&& docker run --rm \
-		-v $(shell pwd):/app \
-		-v $(shell pwd)/.cache:/root/.cache \
-		-w /app golangci/golangci-lint:latest golangci-lint run $(pkg)
+		-v $(pwd):/app \
+		-v $(pwd)/.cache:/root/.cache \
+		-w /app \
+		golangci/golangci-lint:latest golangci-lint run $(pkg)
 
 .PHONY: nancy
 nancy:
@@ -31,7 +33,7 @@ nancy:
 spell-check:
 	docker pull ghcr.io/streetsidesoftware/cspell:latest > /dev/null \
 	&& docker run --rm \
-		-v $(shell pwd):/workdir \
+		-v $(pwd):/workdir \
 		ghcr.io/streetsidesoftware/cspell:latest \
 			--config .vscode/cspell.json "**"
 
