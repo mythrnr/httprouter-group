@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: "actions/checkout@v3"
 
-      - uses: "actions/setup-go@v3"
+      - uses: "actions/setup-go@v4"
         with:
           go-version: "1.20"
 
@@ -64,25 +64,9 @@ jobs:
     steps:
       - uses: "actions/checkout@v3"
 
-      - uses: "actions/setup-go@v3"
+      - uses: "actions/setup-go@v4"
         with:
           go-version: "${{ matrix.go }}"
-
-      - name: "Get GOMODCACHE directory path"
-        id: "gomodcache-dir-path"
-        run: |
-          GOMODCACHE=$(go env GOPATH)/pkg/mod
-          echo "dir=$GOMODCACHE" >> $GITHUB_OUTPUT
-
-      - name: "Cache GOMODCACHE directory"
-        uses: "actions/cache@v3"
-        # use this to check for `cache-hit`
-        # `steps.gomodcache-dir.outputs.cache-hit != 'true'`
-        id: "gomodcache-dir"
-        with:
-          path: "${{ steps.gomodcache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-${{ matrix.go }}-${{ hashFiles(format('{0}{1}', github.workspace, '/go.sum')) }}"
-          restore-keys: "${{ runner.os }}-${{ matrix.go }}-"
 
       - name: "Run tests"
         run: "make test-json > result.json"

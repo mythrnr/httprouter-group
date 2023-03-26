@@ -6,8 +6,6 @@
 
 [![Check codes](https://github.com/mythrnr/httprouter-group/actions/workflows/check-code.yaml/badge.svg)](https://github.com/mythrnr/httprouter-group/actions/workflows/check-code.yaml)
 
-[![Create Release](https://github.com/mythrnr/httprouter-group/actions/workflows/release.yaml/badge.svg)](https://github.com/mythrnr/httprouter-group/actions/workflows/release.yaml)
-
 [![Scan Vulnerabilities](https://github.com/mythrnr/httprouter-group/actions/workflows/scan-vulnerabilities.yaml/badge.svg)](https://github.com/mythrnr/httprouter-group/actions/workflows/scan-vulnerabilities.yaml)
 
 ## Description

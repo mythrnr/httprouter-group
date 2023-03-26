@@ -29,6 +29,14 @@ nancy:
 	&& go list -buildvcs=false -deps -json ./... \
 	| docker run --rm -i sonatypecommunity/nancy:latest sleuth
 
+.PHONY: release
+release:
+	if [ "$(tag)" = "" ]; then \
+		echo "tag name is required."; \
+		exit 1; \
+	fi \
+	&& gh release create $(tag) --generate-notes --target master
+
 .PHONY: spell-check
 spell-check:
 	docker pull ghcr.io/streetsidesoftware/cspell:latest > /dev/null \
