@@ -29,6 +29,7 @@
     "goimports",
     "golangci",
     "golint",
+    "gomod",
     "gomodcache",
     "guyarb",
     "httprouter",
