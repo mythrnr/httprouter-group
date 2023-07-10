@@ -19,6 +19,7 @@
     "buildvcs",
     "cyclop",
     "deadcode",
+    "depguard",
     "dupl",
     "errcheck",
     "exhaustivestruct",

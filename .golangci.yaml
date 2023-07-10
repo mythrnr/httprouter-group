@@ -43,6 +43,7 @@ linters-settings:
 
 linters:
   disable:
+    - "depguard"
     - "varnamelen"
     # ---- deprecated ---- #
     - "deadcode"
