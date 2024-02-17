@@ -110,7 +110,7 @@ func Test_middlewareWith(t *testing.T) {
 		},
 	}
 
-	h := func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	h := func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 		w.Write([]byte("5"))
 	}
 
@@ -129,6 +129,6 @@ func Test_middlewareWith(t *testing.T) {
 
 	body, err := io.ReadAll(w.Body)
 
-	require.Nil(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, "123454321", string(body))
 }

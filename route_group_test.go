@@ -20,17 +20,17 @@ func Test_RouteGroup(t *testing.T) {
 
 	g := group.New("/").Handle(
 		http.MethodGet,
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(rw http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 			rw.Write([]byte("GET /\n"))
 		},
 	).Handle(
 		http.MethodPost,
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(rw http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 			rw.Write([]byte("POST /\n"))
 		},
 	).Handle(
 		http.MethodOptions,
-		func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(rw http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 			rw.Write([]byte("OPTIONS /\n"))
 		},
 	).Middleware(
@@ -51,12 +51,12 @@ func Test_RouteGroup(t *testing.T) {
 	).Children(
 		group.New("/users").Handle(
 			http.MethodGet,
-			func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			func(rw http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 				rw.Write([]byte("GET /users\n"))
 			},
 		).Handle(
 			http.MethodPost,
-			func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			func(rw http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 				rw.Write([]byte("POST /users\n"))
 			},
 		).Middleware(
@@ -77,7 +77,7 @@ func Test_RouteGroup(t *testing.T) {
 		).Children(
 			group.New("/:id").Handle(
 				http.MethodGet,
-				func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+				func(rw http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 					rw.Write([]byte("GET /users/:id\n"))
 				},
 			).Middleware(
@@ -98,7 +98,7 @@ func Test_RouteGroup(t *testing.T) {
 			),
 			group.New("/:id").Handle(
 				http.MethodPut,
-				func(rw http.ResponseWriter, r *http.Request, p httprouter.Params) {
+				func(rw http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 					rw.Write([]byte("PUT /users/:id\n"))
 				},
 			).Middleware(
@@ -148,7 +148,7 @@ func Test_RouteGroup(t *testing.T) {
 		router.ServeHTTP(w, r)
 
 		body, err := io.ReadAll(w.Body)
-		require.Nil(t, err)
+		require.NoError(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
 		assert.Equal(t, []string{
@@ -172,7 +172,7 @@ func Test_RouteGroup(t *testing.T) {
 		router.ServeHTTP(w, r)
 
 		body, err := io.ReadAll(w.Body)
-		require.Nil(t, err)
+		require.NoError(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
 		assert.Equal(t, []string{
@@ -196,7 +196,7 @@ func Test_RouteGroup(t *testing.T) {
 		router.ServeHTTP(w, r)
 
 		body, err := io.ReadAll(w.Body)
-		require.Nil(t, err)
+		require.NoError(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
 		assert.Equal(t, []string{
@@ -224,7 +224,7 @@ func Test_RouteGroup(t *testing.T) {
 		router.ServeHTTP(w, r)
 
 		body, err := io.ReadAll(w.Body)
-		require.Nil(t, err)
+		require.NoError(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
 		assert.Equal(t, []string{
@@ -252,7 +252,7 @@ func Test_RouteGroup(t *testing.T) {
 		router.ServeHTTP(w, r)
 
 		body, err := io.ReadAll(w.Body)
-		require.Nil(t, err)
+		require.NoError(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
 		assert.Equal(t, []string{
@@ -284,7 +284,7 @@ func Test_RouteGroup(t *testing.T) {
 		router.ServeHTTP(w, r)
 
 		body, err := io.ReadAll(w.Body)
-		require.Nil(t, err)
+		require.NoError(t, err)
 
 		values := strings.Split(string(body[:len(body)-1]), "\n")
 		assert.Equal(t, []string{
@@ -311,31 +311,31 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 	g := group.New(
 		"/users/:id",
 	).DELETE(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
 			w.Write([]byte("DELETE /users/" + p.ByName("id")))
 		},
 	).GET(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
 			w.Write([]byte("GET /users/" + p.ByName("id")))
 		},
 	).HEAD(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
 			w.Write([]byte("HEAD /users/" + p.ByName("id")))
 		},
 	).OPTIONS(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
 			w.Write([]byte("OPTIONS /users/" + p.ByName("id")))
 		},
 	).PATCH(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
 			w.Write([]byte("PATCH /users/" + p.ByName("id")))
 		},
 	).POST(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
 			w.Write([]byte("POST /users/" + p.ByName("id")))
 		},
 	).PUT(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
 			w.Write([]byte("PUT /users/" + p.ByName("id")))
 		},
 	)
@@ -369,7 +369,7 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 
 		body, err := io.ReadAll(w.Body)
 
-		require.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "DELETE /users/1", string(body))
 	}
 
@@ -386,7 +386,7 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 
 		body, err := io.ReadAll(w.Body)
 
-		require.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "GET /users/2", string(body))
 	}
 
@@ -403,7 +403,7 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 
 		body, err := io.ReadAll(w.Body)
 
-		require.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "HEAD /users/3", string(body))
 	}
 
@@ -420,7 +420,7 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 
 		body, err := io.ReadAll(w.Body)
 
-		require.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "OPTIONS /users/4", string(body))
 	}
 
@@ -437,7 +437,7 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 
 		body, err := io.ReadAll(w.Body)
 
-		require.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "PATCH /users/5", string(body))
 	}
 
@@ -454,7 +454,7 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 
 		body, err := io.ReadAll(w.Body)
 
-		require.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "POST /users/6", string(body))
 	}
 
@@ -471,7 +471,7 @@ func Test_RouteGroup_shortcut(t *testing.T) {
 
 		body, err := io.ReadAll(w.Body)
 
-		require.Nil(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "PUT /users/7", string(body))
 	}
 }
@@ -480,7 +480,7 @@ func Test_RouteGroup_Any(t *testing.T) {
 	t.Parallel()
 
 	g := group.New("/:param").GET(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
 			w.Write([]byte("GET /" + p.ByName("param")))
 		},
 	).Any(
@@ -488,7 +488,7 @@ func Test_RouteGroup_Any(t *testing.T) {
 			w.Write([]byte("Any: " + r.Method + " /" + p.ByName("param")))
 		},
 	).DELETE(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
 			w.Write([]byte("DELETE /" + p.ByName("param")))
 		},
 	)
@@ -534,7 +534,7 @@ func Test_RouteGroup_Any(t *testing.T) {
 
 		body, err := io.ReadAll(w.Body)
 
-		require.Nil(t, err)
+		require.NoError(t, err)
 
 		switch m {
 		case http.MethodDelete, http.MethodGet:

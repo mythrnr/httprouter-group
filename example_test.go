@@ -12,7 +12,7 @@ import (
 func Example() {
 	// first, define routes, handlers, and middlewares.
 	g := group.New("/").GET(
-		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 			w.Write([]byte("GET /\n"))
 		},
 	).Middleware(
@@ -25,7 +25,7 @@ func Example() {
 		},
 	).Children(
 		group.New("/users").GET(
-			func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 				w.Write([]byte("GET /users\n"))
 			},
 		).Middleware(
@@ -38,17 +38,17 @@ func Example() {
 			},
 		).Children(
 			group.New("/:id").GET(
-				func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+				func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 					w.Write([]byte("GET /users/:id\n"))
 				},
 			),
 		),
 		group.New("/users/:id").PUT(
-			func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 				w.Write([]byte("PUT /users/:id\n"))
 			},
 		).DELETE(
-			func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+			func(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 				w.Write([]byte("DELETE /users/:id\n"))
 			},
 		).Middleware(
@@ -64,7 +64,7 @@ func Example() {
 
 	// next, set up and configure router.
 	router := httprouter.New()
-	router.PanicHandler = func(w http.ResponseWriter, r *http.Request, rec interface{}) {
+	router.PanicHandler = func(_ http.ResponseWriter, _ *http.Request, rec interface{}) {
 		log.Fatal(rec)
 	}
 
