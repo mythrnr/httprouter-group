@@ -9,6 +9,7 @@ import (
 	group "github.com/mythrnr/httprouter-group"
 )
 
+//nolint:testableexamples
 func Example() {
 	// first, define routes, handlers, and middlewares.
 	g := group.New("/").GET(
