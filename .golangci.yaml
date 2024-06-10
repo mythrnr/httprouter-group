@@ -1,4 +1,4 @@
-# see: https://github.com/golangci/golangci-lint/blob/master/.golangci.example.yml
+# see: https://golangci-lint.run/usage/configuration/
 run:
   go: "1.22"
 
@@ -41,9 +41,6 @@ linters:
     # ---- deprecated ---- #
     - "execinquery"
     - "gomnd"
-    - "rowserrcheck"
-    - "sqlclosecheck"
-    - "wastedassign"
     # -------------------- #
   enable-all: true
   fast: false
