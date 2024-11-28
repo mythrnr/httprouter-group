@@ -1,6 +1,6 @@
 # see: https://golangci-lint.run/usage/configuration/
 run:
-  go: "1.22"
+  go: "1.23"
 
 output:
   sort-results: true
@@ -39,8 +39,7 @@ linters:
     - "depguard"
     - "varnamelen"
     # ---- deprecated ---- #
-    - "execinquery"
-    - "gomnd"
+    - "exportloopref"
     # -------------------- #
   enable-all: true
   fast: false

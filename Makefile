@@ -31,11 +31,11 @@ nancy:
 
 .PHONY: release
 release:
-	if [ "$(tag)" = "" ]; then \
-		echo "tag name is required."; \
+	if [ "$(version)" = "" ]; then \
+		echo "version is required."; \
 		exit 1; \
 	fi \
-	&& gh release create $(tag) --generate-notes --target master
+	&& gh release create $(version) --generate-notes --target master
 
 .PHONY: spell-check
 spell-check:

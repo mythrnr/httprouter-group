@@ -20,6 +20,7 @@
     "depguard",
     "dupl",
     "execinquery",
+    "exportloopref",
     "funlen",
     "gocognit",
     "gocyclo",
