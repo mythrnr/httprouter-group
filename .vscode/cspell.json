@@ -42,6 +42,7 @@
     "sonatypecommunity",
     "sqlclosecheck",
     "stretchr",
+    "tenv",
     "testableexamples",
     "testpackage",
     "varnamelen",

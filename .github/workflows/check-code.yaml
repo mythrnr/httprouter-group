@@ -17,9 +17,9 @@ jobs:
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683" # v4.2.2
 
-      - uses: "golangci/golangci-lint-action@v6"
+      - uses: "golangci/golangci-lint-action@4696ba8babb6127d732c3c6dde519db15edab9ea" # v6.5.1
         with:
           version: "latest"
 
@@ -28,11 +28,11 @@ jobs:
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683" # v4.2.2
 
-      - uses: "actions/setup-go@v5"
+      - uses: "actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b" # v5.4.0
         with:
-          go-version: "1.23"
+          go-version: "1.24"
 
       - name: "Write go.list file"
         run: "go list -buildvcs=false -deps -json ./... > go.list"
@@ -44,7 +44,7 @@ jobs:
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683" # v4.2.2
 
       - name: "Run spell check"
         run: "make spell-check"
@@ -56,14 +56,13 @@ jobs:
     strategy:
       matrix:
         go:
-          - "1.20"
-          - "1.21"
           - "1.22"
           - "1.23"
+          - "1.24"
     steps:
-      - uses: "actions/checkout@v4"
+      - uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683" # v4.2.2
 
-      - uses: "actions/setup-go@v5"
+      - uses: "actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b" # v5.4.0
         with:
           go-version: "${{ matrix.go }}"
 
@@ -72,6 +71,6 @@ jobs:
 
       - name: "Annotate tests"
         if: "${{ always() }}"
-        uses: "guyarb/golang-test-annotations@v0.8.0"
+        uses: "guyarb/golang-test-annotations@2941118d7ef622b1b3771d1ff6eae9e90659eb26" # v0.8.0
         with:
           test-results: "result.json"
