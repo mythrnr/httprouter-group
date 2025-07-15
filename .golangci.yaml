@@ -9,6 +9,8 @@ linters:
   disable:
     - "depguard"
     - "varnamelen"
+    # deprecated linters
+    - "wsl"
   settings:
     cyclop:
       max-complexity: 20
