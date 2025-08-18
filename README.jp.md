@@ -124,7 +124,7 @@ func main() {
 
 ## Requirements
 
-- Go 1.23 以上.
+- Go 1.24 以上.
 - Docker (開発時)
 
 ## Install
