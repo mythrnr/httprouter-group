@@ -5,6 +5,9 @@ endif
 pkg ?= ./...
 pwd = $(shell pwd)
 
+.PHONY: ci-suite
+ci-suite: spell-check fmt lint vulnerability-check test
+
 .PHONY: clean
 clean:
 	rm -rf .cache/*
@@ -22,12 +25,6 @@ lint:
 		-v $(pwd)/.cache:/root/.cache \
 		-w /app \
 		golangci/golangci-lint:latest golangci-lint run $(pkg)
-
-.PHONY: nancy
-nancy:
-	docker pull sonatypecommunity/nancy:latest > /dev/null \
-	&& go list -buildvcs=false -deps -json ./... \
-	| docker run --rm -i sonatypecommunity/nancy:latest sleuth
 
 .PHONY: release
 release:
@@ -56,3 +53,8 @@ test-json:
 .PHONY: tidy
 tidy:
 	go mod tidy
+
+.PHONY: vulnerability-check
+vulnerability-check:
+	go install golang.org/x/vuln/cmd/govulncheck@latest
+	govulncheck -show=version ./...

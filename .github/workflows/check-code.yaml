@@ -24,20 +24,7 @@ jobs:
           version: "latest"
 
   scan-vulnerabilities:
-    name: "Scan Vulnerabilities"
-    runs-on: "ubuntu-latest"
-    timeout-minutes: 5
-    steps:
-      - uses: "actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8" # v5.0.0
-
-      - uses: "actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00" # v6.0.0
-        with:
-          go-version: "1.25"
-
-      - name: "Write go.list file"
-        run: "go list -buildvcs=false -deps -json ./... > go.list"
-
-      - uses: "sonatype-nexus-community/nancy-github-action@main"
+    uses: "./.github/workflows/scan-vulnerabilities.yaml"
 
   spell-check:
     name: "Check spell"
