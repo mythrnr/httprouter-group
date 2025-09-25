@@ -3,6 +3,7 @@ name: "Scan Vulnerabilities"
 on:
   schedule:
     - cron: "0 0 * * *"
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -20,7 +21,5 @@ jobs:
         with:
           go-version: "1.25"
 
-      - name: "Write go.list file"
-        run: "go list -buildvcs=false -deps -json ./... > go.list"
-
-      - uses: "sonatype-nexus-community/nancy-github-action@main"
+      - name: "Run vulnerability check"
+        run: "make vulnerability-check"
