@@ -99,7 +99,7 @@ func main() {
 
     // next, set up and configure router.
     router := httprouter.New()
-    router.PanicHandler = func(w http.ResponseWriter, r *http.Request, rec interface{}) {
+    router.PanicHandler = func(w http.ResponseWriter, r *http.Request, rec any) {
         log.Fatal(rec)
     }
 

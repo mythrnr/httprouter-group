@@ -65,7 +65,7 @@ func Example() {
 
 	// next, set up and configure router.
 	router := httprouter.New()
-	router.PanicHandler = func(_ http.ResponseWriter, _ *http.Request, rec interface{}) {
+	router.PanicHandler = func(_ http.ResponseWriter, _ *http.Request, rec any) {
 		log.Fatal(rec)
 	}
 
