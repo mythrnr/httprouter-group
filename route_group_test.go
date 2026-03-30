@@ -3,6 +3,8 @@ package group_test
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"html"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -485,7 +487,9 @@ func Test_RouteGroup_Any(t *testing.T) {
 		},
 	).Any(
 		func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			w.Write([]byte("Any: " + r.Method + " /" + p.ByName("param")))
+			fmt.Fprintf(w, "Any: %s /%s",
+				html.EscapeString(r.Method),
+				html.EscapeString(p.ByName("param")))
 		},
 	).DELETE(
 		func(w http.ResponseWriter, _ *http.Request, p httprouter.Params) {
