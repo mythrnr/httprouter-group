@@ -18,11 +18,10 @@ fmt:
 
 .PHONY: lint
 lint:
-	docker pull golangci/golangci-lint:latest > /dev/null \
-	&& mkdir -p .cache/golangci-lint .cache/go-build \
-	&& docker run --rm \
-		-v $(pwd):/app \
-		-v $(pwd)/.cache:/root/.cache \
+	mkdir -p .cache/golangci-lint .cache/go-build \
+	&& docker run --pull always --rm \
+		-v "$(pwd):/app" \
+		-v "$(pwd)/.cache:/root/.cache" \
 		-w /app \
 		golangci/golangci-lint:latest golangci-lint run $(pkg)
 
@@ -36,9 +35,7 @@ release:
 
 .PHONY: spell-check
 spell-check:
-	docker pull ghcr.io/streetsidesoftware/cspell:latest > /dev/null \
-	&& docker run --rm \
-		-v $(pwd):/workdir \
+	docker run --pull always --rm -v "$(pwd):/workdir" \
 		ghcr.io/streetsidesoftware/cspell:latest \
 			--config /workdir/.vscode/cspell.json "**"
 
