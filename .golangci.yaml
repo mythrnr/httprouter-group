@@ -7,7 +7,9 @@ run:
 linters:
   default: "all"
   disable:
+    - "goconst"
     - "depguard"
+    - "gomodguard"
     - "varnamelen"
     # deprecated linters
     - "wsl"
