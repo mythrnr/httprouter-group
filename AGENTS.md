@@ -68,7 +68,7 @@ make ci-suite           # Full CI pipeline (spell-check -> fmt -> lint -> vulner
 - Table-driven tests with `t.Parallel()`.
 - Use `testify/assert` and `testify/require` for assertions.
 - Internal tests are placed in `*_inner_test.go` files (same package).
-- CI runs tests against Go 1.24, 1.25, and 1.26.
+- CI runs tests against Go 1.24, 1.25, 1.26, and 1.27.
 
 ## Architecture
 
@@ -87,6 +87,6 @@ make ci-suite           # Full CI pipeline (spell-check -> fmt -> lint -> vulner
 
 ## CI/CD
 
-- **check-code.yaml**: Triggered on PRs, pushes to master, and manual dispatch. Runs golangci-lint, spell-check (cspell), and unit tests (Go 1.24/1.25/1.26 matrix).
+- **check-code.yaml**: Triggered on PRs, pushes to master, and manual dispatch. Runs golangci-lint, spell-check (cspell), and unit tests (Go 1.24/1.25/1.26/1.27 matrix).
 - **scan-vulnerabilities.yaml**: Runs daily at 00:00 UTC and on manual dispatch. Uses `govulncheck`.
 - **Dependabot**: Enabled for Go modules and GitHub Actions.

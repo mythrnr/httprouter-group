@@ -19,6 +19,7 @@
     "depguard",
     "dupl",
     "errcheck",
+    "exhaustruct",
     "funlen",
     "gocognit",
     "goconst",
