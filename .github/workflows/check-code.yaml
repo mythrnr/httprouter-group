@@ -17,7 +17,8 @@ jobs:
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
     steps:
-      - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
+      - &checkout
+        uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
         with:
           persist-credentials: false
 
@@ -33,9 +34,7 @@ jobs:
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
     steps:
-      - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
-        with:
-          persist-credentials: false
+      - *checkout
 
       - name: "Run spell check"
         run: "make spell-check"
@@ -50,10 +49,9 @@ jobs:
           - "1.24"
           - "1.25"
           - "1.26"
+          - "1.27"
     steps:
-      - uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
-        with:
-          persist-credentials: false
+      - *checkout
 
       - uses: "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e" # v7.0.0
         with:

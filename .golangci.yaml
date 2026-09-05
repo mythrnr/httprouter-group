@@ -2,7 +2,7 @@
 version: "2"
 
 run:
-  go: "1.26"
+  go: "1.27"
 
 linters:
   default: "all"
@@ -12,6 +12,7 @@ linters:
     - "gomodguard"
     - "varnamelen"
     # deprecated linters
+    - "exhaustruct"
     - "wsl"
   settings:
     cyclop:
